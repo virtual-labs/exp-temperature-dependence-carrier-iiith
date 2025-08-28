@@ -1,1 +1,1 @@
-### Aim of the experiment
+To understand how carrier concentration, Fermi energy levels, and equilibrium relationships in semiconductors vary with temperature, doping concentration, and intrinsic material properties, and to analyze their impact on semiconductor device behavior using theoretical models and energy band concepts.
