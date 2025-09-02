@@ -80,7 +80,7 @@ $$
 
 > **Note:** In **highly doped semiconductors**, the Fermi level may even lie **inside the conduction or valence band**, entering the **degenerate regime**.
 
-<p><img src="images/fermi.png" ></p> 
+<p><img src="images/ferm.png" ></p> 
 ---
 
 ## **Equilibrium Concentration Relationships**
