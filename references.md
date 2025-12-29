@@ -1,0 +1,6 @@
+1. Donald A. Neamen, [*Semiconductor Physics and Devices*](https://www.mheducation.com/highered/product/semiconductor-physics-devices-neamen/M9780073529585.html), 5th Ed., McGraw-Hill, pp. 110-145.<br>
+   [Comprehensive coverage of carrier concentration, intrinsic semiconductors, and temperature dependence of carrier density in Chapter 4]<br>
+2. Ben G. Streetman & Sanjay Banerjee, [*Solid State Electronic Devices*](https://www.pearson.com/en-us/subject-catalog/p/solid-state-electronic-devices/P200000003246), 7th Ed., Pearson, pp. 85-120.<br>
+   [Detailed explanation of intrinsic carrier concentration, energy band diagrams, and thermal generation mechanisms in Chapter 3]<br>
+3. S. M. Sze & Kwok K. Ng, [*Physics of Semiconductor Devices*](https://www.wiley.com/en-us/Physics+of+Semiconductor+Devices%2C+3rd+Edition-p-9780471143239), 3rd Ed., Wiley-Interscience, pp. 16-50.<br>
+   [In-depth analysis of carrier statistics, Fermi-Dirac distribution, and temperature effects on semiconductor properties in Chapter 1]

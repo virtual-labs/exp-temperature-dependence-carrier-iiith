@@ -1,0 +1,158 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "1. If N_D = 1 × 10^16 cm⁻³ and T = 300 K, assuming full ionization in the extrinsic region, the electron concentration n is approximately:",
+      "answers": {
+        "a": "1 × 10^16 cm⁻³",
+        "b": "1 × 10^10 cm⁻³",
+        "c": "1 × 10^5 cm⁻³",
+        "d": "Zero"
+      },
+      "explanations": {
+        "a": "Correct. In the extrinsic region, nearly all donors are ionized, so n ≈ N_D.",
+        "b": "Incorrect. That value is closer to intrinsic levels, not doped regions.",
+        "c": "Incorrect. This is far too small for doped semiconductors.",
+        "d": "Incorrect. The electron concentration cannot drop to zero here."
+      },
+      "correctAnswer": "a",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "2. If n = 5 × 10^15 cm⁻³ and n_i = 1.5 × 10^10 cm⁻³ at 300 K, calculate the hole concentration p.",
+      "answers": {
+        "a": "4.5 × 10^5 cm⁻³",
+        "b": "1.5 × 10^10 cm⁻³",
+        "c": "1.0 × 10^6 cm⁻³",
+        "d": "5 × 10^15 cm⁻³"
+      },
+      "explanations": {
+        "a": "Correct. Using np = n_i², p = n_i² / n = (1.5×10^10)² / (5×10^15) ≈ 4.5×10^5 cm⁻³.",
+        "b": "Incorrect. That would imply n = p, which is not true here.",
+        "c": "Incorrect. Miscalculated using the wrong exponent.",
+        "d": "Incorrect. p is much smaller in n-type semiconductors."
+      },
+      "correctAnswer": "a",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "3. If the bandgap E_g = 1.1 eV, at which temperature will intrinsic carriers dominate approximately?",
+      "answers": {
+        "a": "50 K",
+        "b": "150 K",
+        "c": "300 K",
+        "d": "800 K"
+      },
+      "explanations": {
+        "a": "Incorrect. At 50 K, dopants remain frozen.",
+        "b": "Incorrect. 150 K is still extrinsic-dominated for typical silicon doping levels.",
+        "c": "Incorrect. At 300 K, silicon is still mostly extrinsic unless very lightly doped.",
+        "d": "Correct. At very high temperatures (~800 K), intrinsic carriers dominate strongly due to exponential dependence."
+      },
+      "correctAnswer": "d",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "4. In simulations, as temperature increases from 100 K to 400 K, the Fermi level for an n-type semiconductor is observed to:",
+      "answers": {
+        "a": "Move closer to the donor level",
+        "b": "Move gradually toward the mid-gap",
+        "c": "Remain fixed near the conduction band",
+        "d": "Jump into the valence band"
+      },
+      "explanations": {
+        "a": "Incorrect. That describes low-temperature freeze-out, not high-temperature changes.",
+        "b": "Correct. With increasing T, intrinsic carriers dominate and Fermi level approaches the mid-gap.",
+        "c": "Incorrect. It doesn't remain fixed.",
+        "d": "Incorrect. The Fermi level never enters the valence band for n-type."
+      },
+      "correctAnswer": "b",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "5. If temperature rises but doping concentration remains fixed, what happens to n and p in an intrinsic transition?",
+      "answers": {
+        "a": "n stays constant, p increases",
+        "b": "p stays constant, n decreases",
+        "c": "n ≈ p ≈ n_i increases exponentially",
+        "d": "n decreases to zero"
+      },
+      "explanations": {
+        "a": "Incorrect. n does not remain constant; both n and p change.",
+        "b": "Incorrect. Neither quantity remains fixed.",
+        "c": "Correct. At high temperatures, intrinsic carriers dominate so n ≈ p ≈ n_i, which rises exponentially.",
+        "d": "Incorrect. n never goes to zero."
+      },
+      "correctAnswer": "c",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "6. A simulated band diagram shows E_F shifting downward with increasing T for a p-type semiconductor. This means:",
+      "answers": {
+        "a": "Holes become less dominant",
+        "b": "Electrons dominate conduction",
+        "c": "Intrinsic carriers increase, pushing E_F closer to mid-gap",
+        "d": "The material enters freeze-out"
+      },
+      "explanations": {
+        "a": "Incorrect. In p-type, holes dominate until intrinsic carriers take over.",
+        "b": "Incorrect. Electron dominance occurs only at very high intrinsic levels.",
+        "c": "Correct. The downward E_F shift reflects more balanced carrier populations as intrinsic effects grow.",
+        "d": "Incorrect. Freeze-out happens at low, not high, temperatures."
+      },
+      "correctAnswer": "c",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "7. If a heavily doped n-type sample shows almost no change in electron concentration even at 500 K, the reason is:",
+      "answers": {
+        "a": "Donor ionization is incomplete",
+        "b": "It remains extrinsic because N_D ≫ n_i",
+        "c": "The bandgap has collapsed",
+        "d": "The device is in freeze-out"
+      },
+      "explanations": {
+        "a": "Incorrect. Donor ionization is nearly complete in extrinsic regions.",
+        "b": "Correct. High doping keeps n ≈ N_D even when n_i rises moderately.",
+        "c": "Incorrect. The bandgap doesn't collapse under these conditions.",
+        "d": "Incorrect. Freeze-out occurs at low, not high, temperatures."
+      },
+      "correctAnswer": "b",
+      "difficulty": "advanced"
+    },
+    {
+      "question": "8. When quasi-Fermi levels split significantly under optical excitation, this indicates:",
+      "answers": {
+        "a": "Thermal equilibrium",
+        "b": "Strong non-equilibrium carrier injection",
+        "c": "Complete donor freeze-out",
+        "d": "No change in recombination rate"
+      },
+      "explanations": {
+        "a": "Incorrect. A single Fermi level exists at equilibrium, not two.",
+        "b": "Correct. Quasi-Fermi level splitting reflects a non-equilibrium situation where injected carriers dominate.",
+        "c": "Incorrect. Freeze-out is unrelated to optical pumping.",
+        "d": "Incorrect. Carrier lifetimes are impacted, so recombination changes."
+      },
+      "correctAnswer": "b",
+      "difficulty": "advanced"
+    },
+    {
+      "question": "9. In a simulation, a semiconductor shows np = 2 × 10^20 cm⁻⁶ at 350 K. If n_i = 1 × 10^10 cm⁻³, what does this imply?",
+      "answers": {
+        "a": "The sample is intrinsic",
+        "b": "np = n_i², so it's in thermal equilibrium",
+        "c": "np ≠ n_i², indicating non-equilibrium conditions",
+        "d": "Carrier freeze-out dominates"
+      },
+      "explanations": {
+        "a": "Incorrect. Intrinsic materials have n ≈ p ≈ n_i, but this np mismatch shows otherwise.",
+        "b": "Incorrect. n_i² = 1×10^20 cm⁻⁶, not 2×10^20, so equilibrium is not satisfied.",
+        "c": "Correct. If np ≠ n_i², the semiconductor is under non-equilibrium, possibly due to external bias or optical pumping.",
+        "d": "Incorrect. Freeze-out only affects low-temperature doping activation."
+      },
+      "correctAnswer": "c",
+      "difficulty": "advanced"
+    }
+  ]
+}

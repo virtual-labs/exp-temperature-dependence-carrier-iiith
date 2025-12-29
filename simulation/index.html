@@ -1,0 +1,2983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Semiconductor Physics Virtual Lab</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <script src="mobile-detection.js"></script>
+    <style>
+        /* Common styles for Virtual Labs experiments */
+        html, body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            box-sizing: border-box;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        }
+
+        .card {
+            transition: all 0.3s ease;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin: 1rem;
+            padding: 1.5rem;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+
+        .btn {
+            transition: all 0.2s;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #e879f9, #c084fc);
+            color: white;
+        }
+
+        input[type="range"] {
+            height: 0.5rem;
+            cursor: pointer;
+            width: 100%;
+            margin: 0.5rem 0;
+        }
+
+        /* Floating action buttons & panels */
+        .floating-button {
+            position: fixed;
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .floating-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+        }
+
+        .floating-button:active {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .floating-button.primary {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            bottom: 2rem;
+            right: 2rem;
+        }
+
+        .floating-button.secondary {
+            background: linear-gradient(135deg, #e879f9, #c084fc);
+            bottom: 6.5rem;
+            right: 2rem;
+        }
+
+        .floating-panel {
+            position: fixed;
+            max-width: 20rem;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            z-index: 99;
+            bottom: 7rem;
+            right: 2rem;
+            transform-origin: bottom right;
+            transform: scale(0);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 1.5rem;
+        }
+
+        .floating-panel.active {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .floating-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .floating-panel-close {
+            cursor: pointer;
+            color: #6b7280;
+            width: 1.5rem;
+            height: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .panel-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #1f2937;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 100%;
+            width: 100%;
+            margin: 0;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 0;
+            padding: 20px;
+            box-shadow: none;
+            backdrop-filter: blur(10px);
+            min-height: 100vh;
+            overflow-x: hidden;
+            box-sizing: border-box;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+            line-height: 1.3;
+            word-wrap: break-word;
+        }
+
+        .header p {
+            color: #6b7280;
+            font-size: 1rem;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 20px;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        .visualization-area {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            min-width: 0;
+            overflow-x: hidden;
+            word-wrap: break-word;
+        }
+
+        .controls-panel {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+            min-width: 0;
+            max-width: 400px;
+            overflow-x: hidden;
+            word-wrap: break-word;
+        }
+
+        .experiment-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        .experiment-grid.single {
+            grid-template-columns: 1fr;
+        }
+
+        .experiment-grid > * {
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .plot-container {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            height: 550px;
+            min-width: 0;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        .plot-container.tall {
+            height: 600px;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-group label {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        .control-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .control-input:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+
+        .slider {
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        .preset-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .preset-btn {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            padding: 8px 16px;
+            font-size: 0.8rem;
+            margin: 3px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .preset-btn:hover {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .value-display {
+            background: #f8fafc;
+            padding: 8px 12px;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 600;
+            color: #1f2937;
+            margin-top: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .tab-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin: 0;
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        .tab-nav {
+            display: flex;
+            border-bottom: 2px solid #e5e7eb;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+            min-width: 0;
+            font-size: 0.95rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .tab-btn.active {
+            color: #6366f1;
+            border-bottom-color: #6366f1;
+            background: #f8fafc;
+        }
+
+        .tab-content {
+            padding: 1.5rem;
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            border-left: 4px solid #3b82f6;
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .info-box h4 {
+            margin: 0 0 0.5rem 0;
+            color: #1e40af;
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+
+        .info-box p {
+            margin: 0;
+            color: #1e3a8a;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .formula-box {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            text-align: left;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        /* Challenge Section Styles */
+        .challenge-container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            box-sizing: border-box;
+            word-wrap: break-word;
+        }
+
+        .challenge-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.9;
+        }
+
+        .challenge-progress {
+            background: #e9ecef;
+            border-radius: 25px;
+            height: 8px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .challenge-progress-bar {
+            background: linear-gradient(90deg, #28a745, #20c997);
+            height: 100%;
+            border-radius: 25px;
+            transition: width 0.3s ease;
+        }
+
+        .challenge-section {
+            background: white;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            word-wrap: break-word;
+        }
+
+        .challenge-section:hover {
+            transform: translateY(-2px);
+        }
+
+        .challenge-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .challenge-icon {
+            font-size: 24px;
+            margin-right: 15px;
+        }
+
+        .challenge-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
+            line-height: 1.3;
+            word-wrap: break-word;
+        }
+
+        .challenge-description {
+            padding: 20px;
+            margin: 0;
+            color: #6c757d;
+            font-size: 14px;
+            line-height: 1.6;
+            background: #f8f9fa;
+        }
+
+        .challenge-controls {
+            padding: 20px;
+            text-align: center;
+            background: white;
+        }
+
+        .challenge-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 0 5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .challenge-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .challenge-btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+        }
+
+        .challenge-btn-secondary:hover {
+            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
+        }
+
+        .challenge-feedback {
+            padding: 20px;
+            margin: 0;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .quiz-question {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border: 1px solid #e9ecef;
+        }
+
+        .quiz-question h4 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .quiz-option {
+            display: block;
+            margin: 10px 0;
+            padding: 10px 15px;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-option:hover {
+            background: #e9ecef;
+        }
+
+        .quiz-option.correct {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+
+        .quiz-option.incorrect {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+
+        .quiz-option.selected {
+            background: #cce5ff;
+            border-color: #99d3ff;
+        }
+
+        .fill-blank-input {
+            border: none;
+            border-bottom: 2px solid #667eea;
+            background: transparent;
+            padding: 5px 10px;
+            margin: 0 5px;
+            font-weight: 600;
+            color: #495057;
+            width: 100px;
+            text-align: center;
+        }
+
+        .fill-blank-input:focus {
+            outline: none;
+            border-bottom-color: #764ba2;
+        }
+
+        .calculation-problem {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border: 1px solid #e9ecef;
+        }
+
+        .calculation-input {
+            width: 150px;
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .calculation-input:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+
+        .hint-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            color: #856404;
+        }
+
+        .success-feedback {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .error-feedback {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Fullscreen challenges layout */
+        .challenges-fullscreen .main-content {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+
+        .challenges-fullscreen .controls-panel {
+            display: none;
+        }
+
+        .challenges-fullscreen .challenge-container {
+            max-width: 100%;
+            padding: 30px 40px;
+        }
+
+        .region-indicator {
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            display: inline-block;
+            margin: 0.25rem;
+        }
+
+        .freeze-out {
+            background: #ddd6fe;
+            color: #5b21b6;
+        }
+
+        .extrinsic {
+            background: #bfdbfe;
+            color: #1d4ed8;
+        }
+
+        .intrinsic {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        @media (max-width: 768px) {
+            .experiment-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .floating-panel {
+                max-width: 95%;
+                bottom: 1rem;
+                right: 1rem;
+            }
+            
+            .floating-button.primary {
+                bottom: 1rem;
+                right: 1rem;
+            }
+            
+            .floating-button.secondary {
+                bottom: 5rem;
+                right: 1rem;
+            }
+        }
+
+        /* Custom animation styles */
+        .carrier-particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: drift 2s ease-in-out infinite;
+        }
+
+        .electron {
+            background: #3b82f6;
+            box-shadow: 0 0 8px #3b82f6;
+        }
+
+        .hole {
+            background: #ef4444;
+            box-shadow: 0 0 8px #ef4444;
+        }
+
+        @keyframes drift {
+            0%, 100% { transform: translateX(0px) translateY(0px); }
+            25% { transform: translateX(5px) translateY(-3px); }
+            50% { transform: translateX(-2px) translateY(4px); }
+            75% { transform: translateX(3px) translateY(2px); }
+        }
+
+        .vibrating-atom {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #6b7280;
+            animation: vibrate 1s ease-in-out infinite;
+        }
+
+        @keyframes vibrate {
+            0%, 100% { transform: translate(0px, 0px); }
+            25% { transform: translate(1px, -1px); }
+            50% { transform: translate(-1px, 1px); }
+            75% { transform: translate(1px, 1px); }
+        }
+
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .preset-btn {
+            padding: 0.5rem;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .preset-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3);
+        }
+
+        .measurement-display {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 0;
+            border: 1px solid #e5e7eb;
+            text-align: center;
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .measurement-label {
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-bottom: 4px;
+            font-weight: 500;
+            line-height: 1.3;
+            word-wrap: break-word;
+        }
+
+        .measurement-value {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1f2937;
+            word-wrap: break-word;
+        }
+
+        .measurement-unit {
+            font-size: 0.75rem;
+            color: #6b7280;
+            font-weight: 400;
+        }
+
+        .physics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 4px;
+            margin-top: 8px;
+        }
+
+        .physics-grid .measurement-display {
+            padding: 4px;
+            margin: 0;
+        }
+
+        .physics-grid .measurement-label {
+            font-size: 0.65rem;
+            margin-bottom: 1px;
+        }
+
+        .physics-grid .measurement-value {
+            font-size: 0.8rem;
+        }
+
+        .physics-grid .measurement-unit {
+            font-size: 0.65rem;
+        }
+
+        /* Crystal structure specific styles */
+        .crystal-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: #f8fafc;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .atom {
+            position: absolute;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .silicon-atom {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            width: 24px;
+            height: 24px;
+        }
+
+        .dopant-atom {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            width: 20px;
+            height: 20px;
+        }
+
+        .bond {
+            position: absolute;
+            background: #64748b;
+            height: 2px;
+            transform-origin: left center;
+        }
+
+        .bond.dashed {
+            background: linear-gradient(to right, #64748b 5px, transparent 5px);
+            background-size: 10px 2px;
+        }
+
+        .structure-selector {
+            margin-bottom: 1rem;
+        }
+
+        .structure-btn {
+            padding: 0.5rem 1rem;
+            margin: 0.25rem;
+            border: 2px solid #e5e7eb;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .structure-btn.active {
+            border-color: #6366f1;
+            background: #f0f9ff;
+            color: #1d4ed8;
+        }
+
+        .temperature-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.9);
+            padding: 0.5rem;
+            border-radius: 6px;
+            font-weight: bold;
+            color: #1f2937;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                width: 100%;
+                max-width: 100%;
+            }
+            
+            .controls-panel {
+                order: -1;
+                margin-bottom: 20px;
+                max-width: none;
+            }
+
+            .experiment-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .experiment-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .plot-container {
+                height: 450px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 12px;
+                overflow-x: hidden;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+                line-height: 1.2;
+            }
+            
+            .header p {
+                font-size: 0.9rem;
+            }
+            
+            .tab-nav {
+                flex-wrap: wrap;
+                overflow-x: auto;
+            }
+            
+            .tab-btn {
+                flex: 1 1 45%;
+                margin: 2px;
+                padding: 10px 6px;
+                font-size: 0.85rem;
+                min-width: 0;
+            }
+            
+            .tab-btn i {
+                display: none;
+            }
+
+            .preset-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .controls-panel {
+                padding: 16px;
+            }
+            
+            .visualization-area {
+                padding: 16px;
+            }
+
+            .main-content {
+                gap: 15px;
+                grid-template-columns: 1fr;
+            }
+
+            .visualization-area,
+            .controls-panel {
+                min-width: 0;
+                overflow-x: hidden;
+            }
+
+            .experiment-grid {
+                gap: 0.8rem;
+                grid-template-columns: 1fr;
+            }
+
+            .plot-container {
+                min-width: 0;
+                overflow: hidden;
+                height: 400px;
+                padding: 0.75rem;
+            }
+            
+            .formula-box {
+                font-size: 0.75rem;
+                padding: 0.8rem;
+            }
+            
+            .measurement-label {
+                font-size: 0.7rem;
+            }
+            
+            .measurement-value {
+                font-size: 0.85rem;
+            }
+            
+            .control-group label {
+                font-size: 0.85rem;
+            }
+            
+            .challenge-container {
+                padding: 12px;
+            }
+            
+            .challenge-stats {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .challenge-title {
+                font-size: 16px;
+            }
+            
+            .challenge-header {
+                padding: 15px;
+            }
+            
+            .challenge-description {
+                font-size: 0.85rem;
+                padding: 15px;
+            }
+            
+            .stat-value {
+                font-size: 24px;
+            }
+            
+            .stat-label {
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Temperature Dependence of Carrier Concentration</h1>
+            <p>Explore semiconductor physics through interactive visualizations</p>
+        </div>
+
+        <div class="main-content">
+            <div class="visualization-area">
+                <div class="tab-container">
+                    <div class="tab-nav">
+                        <button class="tab-btn active" onclick="switchTab('carrier-dynamics')">
+                            <i class="fas fa-atom"></i> Carrier Dynamics
+                        </button>
+                        <button class="tab-btn" onclick="switchTab('energy-bands')">
+                            <i class="fas fa-layer-group"></i> Energy Bands
+                        </button>
+                        <button class="tab-btn" onclick="switchTab('transport')">
+                            <i class="fas fa-arrows-alt"></i> Transport Properties
+                        </button>
+                        <button class="tab-btn" onclick="switchTab('challenges')">
+                            <i class="fas fa-trophy"></i> Challenges
+                        </button>
+                    </div>
+
+            <!-- Carrier Dynamics Tab -->
+            <div id="carrier-dynamics" class="tab-content active">
+                <div class="experiment-grid">
+                    <div class="plot-container">
+                        <div id="carrier-temp-plot" style="height: 100%; width: 100%;"></div>
+                    </div>
+                    <div class="plot-container">
+                        <div id="fermi-level-plot" style="height: 100%; width: 100%;"></div>
+                    </div>
+                </div>
+
+                <div class="experiment-grid">
+                    <div class="measurement-display">
+                        <div class="measurement-label">Ionization Ratio (n/N<sub>D</sub>)</div>
+                        <div class="measurement-value" id="ionizationRatio">1.00 <span class="measurement-unit">-</span></div>
+                    </div>
+                    <div class="measurement-display">
+                        <div class="measurement-label">Intrinsic Concentration</div>
+                        <div class="measurement-value" id="intrinsicConc">1.45e10 <span class="measurement-unit">cm⁻³</span></div>
+                    </div>
+                    <div class="measurement-display">
+                        <div class="measurement-label">Fermi Level (E<sub>F</sub> - E<sub>i</sub>)</div>
+                        <div class="measurement-value" id="fermiLevel">0.347 <span class="measurement-unit">eV</span></div>
+                    </div>
+                    <div class="measurement-display">
+                        <div class="measurement-label">Conduction Regime</div>
+                        <div class="measurement-value" id="conductionRegime">Extrinsic</div>
+                    </div>
+                </div>
+
+                <div class="formula-box">
+                    <strong>Ionization in n-type semiconductor:</strong><br>
+                    n/N<sub>D</sub> = 1/(1 + 2(N<sub>D</sub>/N<sub>c</sub>)exp(E<sub>d</sub>/kT)) [Freeze-out]<br>
+                    n ≈ N<sub>D</sub> [Extrinsic: E<sub>d</sub> << kT]<br>
+                    n = n<sub>i</sub> = √(N<sub>c</sub>N<sub>v</sub>)exp(-E<sub>g</sub>/2kT) [Intrinsic: n<sub>i</sub> >> N<sub>D</sub>]
+                </div>
+            </div>
+
+            <!-- Energy Bands Tab -->
+            <div id="energy-bands" class="tab-content">
+                <div class="experiment-grid">
+                    <div class="plot-container">
+                        <div id="band-diagram-plot" style="height: 100%; width: 100%;"></div>
+                    </div>
+                    <div class="plot-container">
+                        <div id="distribution-plot" style="height: 100%; width: 100%;"></div>
+                    </div>
+                </div>
+
+                <div class="experiment-grid">
+                    <div class="measurement-display">
+                        <div class="measurement-label">Thermal Velocity</div>
+                        <div class="measurement-value" id="thermalVel">1.17e5 <span class="measurement-unit">m/s</span></div>
+                    </div>
+                    <div class="measurement-display">
+                        <div class="measurement-label">Mean Free Path</div>
+                        <div class="measurement-value" id="meanFreePath">25.4 <span class="measurement-unit">nm</span></div>
+                    </div>
+                    <div class="measurement-display">
+                        <div class="measurement-label">Carrier Distribution Width</div>
+                        <div class="measurement-value" id="distributionWidth">3.5 <span class="measurement-unit">kT</span></div>
+                    </div>
+                    <div class="measurement-display">
+                        <div class="measurement-label">Thermal Energy (kT)</div>
+                        <div class="measurement-value" id="thermalEnergy">25.9 <span class="measurement-unit">meV</span></div>
+                    </div>
+                </div>
+
+                <div class="formula-box">
+                    <strong>Distribution Functions:</strong><br>
+                    f(E) = 1/(1 + exp((E - E<sub>F</sub>)/kT)) [Fermi-Dirac Distribution]<br>
+                    f(v) = 4π(m*/2πkT)^(3/2) v² exp(-m*v²/2kT) [Maxwell-Boltzmann Velocity]<br>
+                    v<sub>th</sub> = √(3kT/m*) [Thermal Velocity]
+                </div>
+            </div>
+
+            <!-- Transport Properties Tab -->
+            <div id="transport" class="tab-content">
+                <div class="experiment-grid single">
+                    <div class="plot-container tall">
+                        <div id="mobility-plot" style="height: 100%; width: 100%;"></div>
+                    </div>
+                </div>
+
+                <div class="experiment-grid">
+                    <div class="measurement-display">
+                        <div class="measurement-label">Electron Mobility</div>
+                        <div class="measurement-value" id="electronMobility">1350 <span class="measurement-unit">cm²/V·s</span></div>
+                    </div>
+                    <div class="measurement-display">
+                        <div class="measurement-label">Hole Mobility</div>
+                        <div class="measurement-value" id="holeMobility">480 <span class="measurement-unit">cm²/V·s</span></div>
+                    </div>
+                    <div class="measurement-display">
+                        <div class="measurement-label">Diffusion Coefficient</div>
+                        <div class="measurement-value" id="diffusionCoeff">35.1 <span class="measurement-unit">cm²/s</span></div>
+                    </div>
+                    <div class="measurement-display">
+                        <div class="measurement-label">Conductivity</div>
+                        <div class="measurement-value" id="conductivity">2.16 <span class="measurement-unit">S/cm</span></div>
+                    </div>
+                </div>
+
+                <div class="formula-box">
+                    <strong>Mobility & Scattering:</strong><br>
+                    μ = qτ/m* [Mobility Definition]<br>
+                    1/μ<sub>total</sub> = 1/μ<sub>lattice</sub> + 1/μ<sub>impurity</sub> [Matthiessen's Rule]<br>
+                    μ<sub>lattice</sub> ∝ T⁻³/² [Phonon Scattering], μ<sub>impurity</sub> ∝ T³/² [Ionized Impurity Scattering]<br>
+                    D = μkT/q [Einstein Relation]
+                </div>
+            </div>
+
+            <!-- Challenges Tab -->
+            <div id="challenges" class="tab-content">
+                <div class="challenge-container">
+                    <!-- Randomization Info Banner -->
+
+
+                    <div class="challenge-stats">
+                        <div class="stat-item">
+                            <div class="stat-value" id="totalScoreValue">0</div>
+                            <div class="stat-label">Total Score</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="challengesCompletedValue">0/4</div>
+                            <div class="stat-label">Challenges Completed</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="hintsUsedValue">0</div>
+                            <div class="stat-label">Hints Used</div>
+                        </div>
+                    </div>
+
+                    <div class="challenge-progress">
+                        <div class="challenge-progress-bar" id="totalProgressBar" style="width: 0%;"></div>
+                    </div>
+
+                    <!-- Challenge 1: Basic MCQs -->
+                    <div class="challenge-section" id="challenge1">
+                        <div class="challenge-header">
+                            <div class="challenge-icon">
+                                <i class="fas fa-question-circle"></i>
+                            </div>
+                            <h3 class="challenge-title">Semiconductor Physics Fundamentals</h3>
+                        </div>
+                        <p class="challenge-description">Test your understanding of semiconductor physics concepts with these multiple-choice questions.</p>
+                        
+                        <div id="challenge1-content"></div>
+                        
+                        <div class="challenge-controls">
+                            <button class="challenge-btn challenge-btn-primary" onclick="checkQuizAnswers(1)">Submit Answers</button>
+                            <button class="challenge-btn challenge-btn-secondary" onclick="showQuizHints(1)">Hint</button>
+                            <button class="challenge-btn challenge-btn-secondary" onclick="resetChallenge(1)">Reset</button>
+                        </div>
+                        <div class="challenge-feedback" id="challenge1-feedback"></div>
+                    </div>
+
+                    <!-- Challenge 2: Advanced Concepts -->
+                    <div class="challenge-section" id="challenge2">
+                        <div class="challenge-header">
+                            <div class="challenge-icon">
+                                <i class="fas fa-atom"></i>
+                            </div>
+                            <h3 class="challenge-title">Carrier Dynamics & Energy Bands</h3>
+                        </div>
+                        <p class="challenge-description">Demonstrate your advanced understanding of carrier dynamics and energy band theory in semiconductors.</p>
+                        
+                        <div id="challenge2-content"></div>
+                        
+                        <div class="challenge-controls">
+                            <button class="challenge-btn challenge-btn-primary" onclick="checkAdvancedAnswers()">Submit Answers</button>
+                            <button class="challenge-btn challenge-btn-secondary" onclick="showAdvancedHints()">Hint</button>
+                            <button class="challenge-btn challenge-btn-secondary" onclick="resetChallenge(2)">Reset</button>
+                        </div>
+                        <div class="challenge-feedback" id="challenge2-feedback"></div>
+                    </div>
+
+                    <!-- Challenge 3: Fill in the Blanks -->
+                    <div class="challenge-section" id="challenge3">
+                        <div class="challenge-header">
+                            <div class="challenge-icon">
+                                <i class="fas fa-edit"></i>
+                            </div>
+                            <h3 class="challenge-title">Complete the Equations</h3>
+                        </div>
+                        <p class="challenge-description">Fill in the missing terms in these semiconductor physics equations and relationships.</p>
+                        
+                        <div id="challenge3-content"></div>
+                        
+                        <div class="challenge-controls">
+                            <button class="challenge-btn challenge-btn-primary" onclick="checkFillBlanks()">Submit Answers</button>
+                            <button class="challenge-btn challenge-btn-secondary" onclick="showFillBlanksHint()">Hint</button>
+                            <button class="challenge-btn challenge-btn-secondary" onclick="resetChallenge(3)">Reset</button>
+                        </div>
+                        <div class="challenge-feedback" id="challenge3-feedback"></div>
+                    </div>
+
+                    <!-- Challenge 4: Numerical Problems -->
+                    <div class="challenge-section" id="challenge4">
+                        <div class="challenge-header">
+                            <div class="challenge-icon">
+                                <i class="fas fa-calculator"></i>
+                            </div>
+                            <h3 class="challenge-title">Semiconductor Calculations</h3>
+                        </div>
+                        <p class="challenge-description">Solve these numerical problems related to semiconductor device physics and carrier transport.</p>
+                        
+                        <div id="challenge4-content"></div>
+                        
+                        <div class="challenge-controls">
+                            <button class="challenge-btn challenge-btn-primary" onclick="checkCalculations()">Submit Answers</button>
+                            <button class="challenge-btn challenge-btn-secondary" onclick="showCalculationHint()">Hint</button>
+                            <button class="challenge-btn challenge-btn-secondary" onclick="resetChallenge(4)">Reset</button>
+                        </div>
+                        <div class="challenge-feedback" id="challenge4-feedback"></div>
+                    </div>
+
+                    <!-- Control Buttons -->
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button class="btn btn-primary" onclick="getNewQuestions()" style="margin-right: 15px;">
+                            <i class="fas fa-random"></i> New Questions
+                        </button>
+                        <button class="btn btn-danger" onclick="resetAllChallenges()">
+                            <i class="fas fa-undo"></i> Reset All Challenges
+                        </button>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <div class="controls-panel">
+            <h3 class="panel-title">
+                <i class="fas fa-sliders-h"></i> Simulation Controls
+            </h3>
+            
+            <!-- Quick Presets -->
+            <div class="control-group">
+                <label>Quick Presets</label>
+                <div class="preset-grid">
+                    <button class="preset-btn" onclick="applyPreset('silicon')">Silicon</button>
+                    <button class="preset-btn" onclick="applyPreset('germanium')">Germanium</button>
+                    <button class="preset-btn" onclick="applyPreset('gaas')">GaAs</button>
+                    <button class="preset-btn" onclick="applyPreset('freezeout')">Freeze-out</button>
+                    <button class="preset-btn" onclick="applyPreset('highTemp')">High T</button>
+                    <button class="preset-btn" onclick="applyPreset('intrinsic')">Intrinsic</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="temperature">Temperature (K)</label>
+                <input type="range" id="temperature" class="slider" min="4" max="800" value="300" oninput="updateSimulation()">
+                <div class="value-display" id="tempValue">300 K</div>
+            </div>
+
+            <div class="control-group">
+                <label for="doping">Doping Concentration (cm⁻³)</label>
+                <input type="range" id="doping" class="slider" min="14" max="18" step="0.1" value="16" oninput="updateSimulation()">
+                <div class="value-display" id="dopingValue">10¹⁶ cm⁻³</div>
+            </div>
+
+            <div class="control-group">
+                <label for="dopingType">Doping Type</label>
+                <select id="dopingType" class="control-input" onchange="updateSimulation()">
+                    <option value="n-type">n-type (Donors)</option>
+                    <option value="p-type">p-type (Acceptors)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="material">Material</label>
+                <select id="material" class="control-input" onchange="updateMaterial(); updateSimulation()">
+                    <option value="Si">Silicon (Si)</option>
+                    <option value="GaAs">Gallium Arsenide (GaAs)</option>
+                    <option value="Ge">Germanium (Ge)</option>
+                    <option value="InP">Indium Phosphide (InP)</option>
+                    <option value="GaN">Gallium Nitride (GaN)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <button class="btn btn-primary" onclick="resetToDefaults()">
+                    <i class="fas fa-undo"></i> Reset to Defaults
+                </button>
+            </div>
+
+            <!-- Physics Values Section -->
+            <div class="control-group">
+                <label>Physics Values</label>
+                <div id="physicsValues" class="physics-grid">
+                    <div class="measurement-display">
+                        <div class="measurement-label">Band Gap</div>
+                        <div class="measurement-value" id="bandGapValue">1.12 <span class="measurement-unit">eV</span></div>
+                    </div>
+                    <div class="measurement-display">
+                        <div class="measurement-label">Effective Mass</div>
+                        <div class="measurement-value" id="effectiveMassValue">1.08</div>
+                    </div>
+                    <div class="measurement-display">
+                        <div class="measurement-label">Dielectric Const.</div>
+                        <div class="measurement-value" id="dielectricValue">11.7</div>
+                    </div>
+                    <div class="measurement-display">
+                        <div class="measurement-label">Mobility</div>
+                        <div class="measurement-value" id="mobilityValue">1350 <span class="measurement-unit">cm²/V·s</span></div>
+                    </div>
+                    <div class="measurement-display">
+                        <div class="measurement-label">DOS (N<sub>c</sub>)</div>
+                        <div class="measurement-value" id="dosConduction">2.8e19 <span class="measurement-unit">cm⁻³</span></div>
+                    </div>
+                    <div class="measurement-display">
+                        <div class="measurement-label">DOS (N<sub>v</sub>)</div>
+                        <div class="measurement-value" id="dosValence">1.04e19 <span class="measurement-unit">cm⁻³</span></div>
+                    </div>
+                    <div class="measurement-display">
+                        <div class="measurement-label">Donor Energy</div>
+                        <div class="measurement-value" id="donorEnergy">45 <span class="measurement-unit">meV</span></div>
+                    </div>
+                    <div class="measurement-display">
+                        <div class="measurement-label">Thermal Voltage</div>
+                        <div class="measurement-value" id="thermalVoltage">25.9 <span class="measurement-unit">mV</span></div>
+                    </div>
+                    <div class="measurement-display">
+                        <div class="measurement-label">Debye Temp.</div>
+                        <div class="measurement-value" id="debyeTemp">645 <span class="measurement-unit">K</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Physical constants and material properties
+        const constants = {
+            k: 8.617e-5,  // Boltzmann constant in eV/K
+            q: 1.602e-19, // Elementary charge
+            m0: 9.109e-31, // Free electron mass
+            h: 6.626e-34,  // Planck constant
+            hbar: 1.055e-34 // Reduced Planck constant
+        };
+
+        const materials = {
+            Si: { 
+                Eg: 1.12, Nc: 2.8e19, Nv: 1.04e19, Ed: 0.045, Ea: 0.045,
+                name: 'Silicon', color: '#3b82f6',
+                me_eff: 0.26, mh_eff: 0.39, mu_n: 1350, mu_p: 480,
+                lattice_a: 5.431, debye_temp: 645, epsilon_r: 11.7
+            },
+            GaAs: { 
+                Eg: 1.42, Nc: 4.7e17, Nv: 7.0e18, Ed: 0.006, Ea: 0.028,
+                name: 'Gallium Arsenide', color: '#ef4444',
+                me_eff: 0.067, mh_eff: 0.45, mu_n: 8500, mu_p: 400,
+                lattice_a: 5.653, debye_temp: 344, epsilon_r: 13.1
+            },
+            Ge: { 
+                Eg: 0.66, Nc: 1.04e19, Nv: 6.0e18, Ed: 0.01, Ea: 0.01,
+                name: 'Germanium', color: '#8b5cf6',
+                me_eff: 0.12, mh_eff: 0.28, mu_n: 3900, mu_p: 1900,
+                lattice_a: 5.658, debye_temp: 374, epsilon_r: 16.0
+            },
+            InP: { 
+                Eg: 1.35, Nc: 5.7e17, Nv: 1.1e19, Ed: 0.007, Ea: 0.040,
+                name: 'Indium Phosphide', color: '#f59e0b',
+                me_eff: 0.08, mh_eff: 0.6, mu_n: 4600, mu_p: 150,
+                lattice_a: 5.869, debye_temp: 321, epsilon_r: 12.4
+            },
+            GaN: { 
+                Eg: 3.4, Nc: 2.3e18, Nv: 4.6e19, Ed: 0.030, Ea: 0.200,
+                name: 'Gallium Nitride', color: '#10b981',
+                me_eff: 0.20, mh_eff: 1.4, mu_n: 900, mu_p: 30,
+                lattice_a: 3.189, debye_temp: 600, epsilon_r: 9.5
+            }
+        };
+
+        let currentMaterial = materials.Si;
+        let currentTab = 'carrier-dynamics';
+        let animationId = null;
+
+        // Initialize simulation
+        document.addEventListener('DOMContentLoaded', function() {
+            randomizeQuestions(); // Initialize with random questions on page load
+            updateMaterial();
+            updateSimulation();
+        });
+
+        function switchTab(tabName) {
+            // Hide all tab contents and remove active class from buttons
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab and mark button as active
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            currentTab = tabName;
+
+            updateSimulation();
+        }
+
+        function updateMaterial() {
+            const materialSelect = document.getElementById('material');
+            currentMaterial = materials[materialSelect.value];
+            
+            // Update material-specific measurements with null checks
+            const latticeConstant = document.getElementById('latticeConstant');
+            if (latticeConstant) latticeConstant.textContent = currentMaterial.lattice_a.toFixed(3);
+            
+            const debyeTemp = document.getElementById('debyeTemp');
+            if (debyeTemp) debyeTemp.textContent = currentMaterial.debye_temp.toString();
+            
+            const dosConduction = document.getElementById('dosConduction');
+            if (dosConduction) dosConduction.innerHTML = `${currentMaterial.Nc.toExponential(1)} <span class="measurement-unit">cm⁻³</span>`;
+            
+            const dosValence = document.getElementById('dosValence');
+            if (dosValence) dosValence.innerHTML = `${currentMaterial.Nv.toExponential(1)} <span class="measurement-unit">cm⁻³</span>`;
+            
+            const donorEnergy = document.getElementById('donorEnergy');
+            if (donorEnergy) donorEnergy.innerHTML = `${(currentMaterial.Ed * 1000).toFixed(0)} <span class="measurement-unit">meV</span>`;
+        }
+
+        function updateSimulation() {
+            const temp = parseFloat(document.getElementById('temperature').value);
+            const dopingLog = parseFloat(document.getElementById('doping').value);
+            const doping = Math.pow(10, dopingLog);
+            const dopingType = document.getElementById('dopingType').value;
+
+            // Update display values with null checks
+            const tempValue = document.getElementById('tempValue');
+            if (tempValue) tempValue.textContent = `${temp} K`;
+            
+            const dopingValue = document.getElementById('dopingValue');
+            if (dopingValue) dopingValue.textContent = `10^${dopingLog.toFixed(1)} cm⁻³`;
+            
+            const thermalVoltage = document.getElementById('thermalVoltage');
+            if (thermalVoltage) thermalVoltage.innerHTML = `${(constants.k * temp * 1000).toFixed(1)} <span class="measurement-unit">mV</span>`;
+
+            // Calculate physical properties
+            const physics = calculatePhysics(temp, doping, dopingType);
+            
+            // Update measurements
+            updateMeasurements(physics);
+            
+            // Update temperature indicator in crystal structure with null check
+            const tempIndicator = document.getElementById('tempIndicator');
+            if (tempIndicator) tempIndicator.textContent = `${temp}K`;
+            
+            // Update plots based on current tab
+            switch(currentTab) {
+                case 'carrier-dynamics':
+                    plotCarrierDynamics(physics);
+                    plotFermiLevel(physics);
+                    break;
+                case 'energy-bands':
+                    plotBandDiagram(physics);
+                    plotDistributionFunctions(physics);
+                    break;
+                case 'transport':
+                    plotMobilityVsTemperature(physics);
+                    break;
+            }
+        }
+
+        function calculatePhysics(T, ND, type) {
+            const mat = currentMaterial;
+            
+            // Temperature-dependent effective densities of states
+            const Nc_T = mat.Nc * Math.pow(T/300, 1.5);
+            const Nv_T = mat.Nv * Math.pow(T/300, 1.5);
+            
+            // Intrinsic carrier concentration
+            const ni = Math.sqrt(Nc_T * Nv_T) * Math.exp(-mat.Eg / (2 * constants.k * T));
+            
+            // Carrier concentrations based on doping type
+            let n, p, ionization_ratio;
+            if (type === 'n-type') {
+                // Proper ionization calculation for n-type
+                if (T < 50) {
+                    // Complete freeze-out
+                    ionization_ratio = 0.001;
+                } else {
+                    // Ionization equation: n = ND * ionization_ratio
+                    // From charge neutrality: n = ND * f where f is ionization fraction
+                    // f = 1/(1 + 2*ND/Nc * exp(Ed/kT))
+                    const exp_term = Math.exp(mat.Ed / (constants.k * T));
+                    ionization_ratio = 1 / (1 + 2 * (ND / Nc_T) * exp_term);
+                }
+                
+                n = ND * ionization_ratio;
+                
+                // Check if intrinsic regime
+                if (ni > n) {
+                    n = ni;
+                    ionization_ratio = ni / ND;
+                }
+                
+                p = ni * ni / n;
+            } else {
+                // p-type semiconductor
+                const exp_term = Math.exp(mat.Ea / (constants.k * T));
+                ionization_ratio = 1 / (1 + 4 * (ND / Nv_T) * exp_term);
+                
+                p = ND * ionization_ratio;
+                if (ni > p) {
+                    p = ni;
+                    ionization_ratio = ni / ND;
+                }
+                n = ni * ni / p;
+            }
+            
+            // Fermi level relative to intrinsic level (always positive for n-type above intrinsic)
+            const EF = constants.k * T * Math.log(n / ni);
+            
+            // Mobility calculations with proper temperature dependence
+            const mu_n = mat.mu_n * Math.pow(T/300, -2.4) / (1 + Math.pow(ND / 1e17, 0.5) * 0.1);
+            const mu_p = mat.mu_p * Math.pow(T/300, -2.2) / (1 + Math.pow(ND / 1e17, 0.5) * 0.1);
+            
+            // Thermal velocity
+            const vth_n = Math.sqrt(3 * constants.k * T / (mat.me_eff * constants.m0)) * 6.242e18;
+            const vth_p = Math.sqrt(3 * constants.k * T / (mat.mh_eff * constants.m0)) * 6.242e18;
+            
+            // Diffusion coefficient (Einstein relation): D = μ × (kT/q)
+            // kT/q gives thermal voltage in V, μ in cm²/V·s, so D is in cm²/s
+            const Dn = mu_n * constants.k * T; // k is in eV/K, result in cm²/s
+            const Dp = mu_p * constants.k * T;
+            
+            // Conductivity
+            const sigma = constants.q * (n * mu_n + p * mu_p) / 1e4; // S/cm
+            
+            // Mean free path
+            const tau_n = mat.me_eff * constants.m0 * mu_n / constants.q;
+            const lambda_n = vth_n * tau_n;
+            
+            // Phonon properties
+            const omega_D = constants.k * mat.debye_temp / constants.hbar;
+            const average_phonon_energy = constants.hbar * omega_D * (1 / (Math.exp(constants.hbar * omega_D / (constants.k * T)) - 1) + 0.5);
+            
+            // RMS displacement calculation
+            const atomic_mass = 28 * 1.66e-27; // kg for Silicon
+            const u_rms = Math.sqrt((constants.hbar / (2 * atomic_mass * omega_D)) * 
+                          (1 + 2 / (Math.exp(constants.hbar * omega_D / (constants.k * T)) - 1))) * 1e10; // Å
+            
+            // Determine conduction regime
+            let regime;
+            if (T < 150 && ionization_ratio < 0.8) {
+                regime = 'Freeze-out';
+            } else if (ni < ND / 2) {
+                regime = 'Extrinsic';
+            } else {
+                regime = 'Intrinsic';
+            }
+            
+            return {
+                T, ND, type, mat,
+                ni, n, p, EF, regime, ionization_ratio,
+                mu_n, mu_p, vth_n, vth_p,
+                Dn, Dp, sigma, lambda_n,
+                Nc_T, Nv_T, omega_D, u_rms,
+                average_phonon_energy, tau_n
+            };
+        }
+
+        function updateMeasurements(physics) {
+            // Main measurements for carrier dynamics - with null checks
+            const ionizationRatio = document.getElementById('ionizationRatio');
+            if (ionizationRatio) ionizationRatio.innerHTML = `${physics.ionization_ratio.toFixed(3)} <span class="measurement-unit">-</span>`;
+            
+            const intrinsicConc = document.getElementById('intrinsicConc');
+            if (intrinsicConc) intrinsicConc.innerHTML = `${physics.ni.toExponential(2)} <span class="measurement-unit">cm⁻³</span>`;
+            
+            const fermiLevel = document.getElementById('fermiLevel');
+            if (fermiLevel) fermiLevel.innerHTML = `${physics.EF.toFixed(3)} <span class="measurement-unit">eV</span>`;
+            
+            const conductionRegime = document.getElementById('conductionRegime');
+            if (conductionRegime) conductionRegime.textContent = physics.regime;
+            
+            // Energy band measurements
+            const thermalVel = document.getElementById('thermalVel');
+            if (thermalVel) thermalVel.innerHTML = `${physics.vth_n.toExponential(2)} <span class="measurement-unit">m/s</span>`;
+            
+            const meanFreePath = document.getElementById('meanFreePath');
+            if (meanFreePath) meanFreePath.innerHTML = `${(physics.lambda_n * 1e9).toFixed(1)} <span class="measurement-unit">nm</span>`;
+            
+            const distributionWidth = document.getElementById('distributionWidth');
+            if (distributionWidth) distributionWidth.innerHTML = `${(3.5).toFixed(1)} <span class="measurement-unit">kT</span>`;
+            
+            const thermalEnergy = document.getElementById('thermalEnergy');
+            if (thermalEnergy) thermalEnergy.innerHTML = `${(constants.k * physics.T * 1000).toFixed(1)} <span class="measurement-unit">meV</span>`;
+            
+            // Transport measurements
+            const electronMobility = document.getElementById('electronMobility');
+            if (electronMobility) electronMobility.innerHTML = `${physics.mu_n.toFixed(0)} <span class="measurement-unit">cm²/V·s</span>`;
+            
+            const holeMobility = document.getElementById('holeMobility');
+            if (holeMobility) holeMobility.innerHTML = `${physics.mu_p.toFixed(0)} <span class="measurement-unit">cm²/V·s</span>`;
+            
+            const diffusionCoeff = document.getElementById('diffusionCoeff');
+            if (diffusionCoeff) diffusionCoeff.innerHTML = `${physics.Dn.toFixed(1)} <span class="measurement-unit">cm²/s</span>`;
+            
+            const conductivity = document.getElementById('conductivity');
+            if (conductivity) conductivity.innerHTML = `${physics.sigma.toExponential(2)} <span class="measurement-unit">S/cm</span>`;
+        }
+
+        function plotCarrierDynamics(physics) {
+            const temps = [];
+            const ionization_ratios = [];
+            const intrinsic_values = [];
+            const regime_colors = [];
+            
+            for (let T = 10; T <= 800; T += 10) {
+                const tempPhysics = calculatePhysics(T, physics.ND, physics.type);
+                temps.push(T);
+                ionization_ratios.push(tempPhysics.ionization_ratio);
+                intrinsic_values.push(tempPhysics.ni / physics.ND); // Normalize by doping
+                
+                // Color code by regime
+                if (tempPhysics.regime === 'Freeze-out') {
+                    regime_colors.push('#8b5cf6');
+                } else if (tempPhysics.regime === 'Extrinsic') {
+                    regime_colors.push('#3b82f6');
+                } else {
+                    regime_colors.push('#ef4444');
+                }
+            }
+
+            const trace_ionization = {
+                x: temps,
+                y: ionization_ratios,
+                type: 'scatter',
+                mode: 'lines+markers',
+                line: { color: physics.mat.color, width: 4 },
+                marker: { color: regime_colors, size: 8 },
+                name: `Ionization Ratio (${physics.type})`
+            };
+
+            const trace_intrinsic = {
+                x: temps,
+                y: intrinsic_values,
+                type: 'scatter',
+                mode: 'lines',
+                line: { color: '#ef4444', width: 3, dash: 'dash' },
+                name: 'Intrinsic/N<sub>D</sub>'
+            };
+
+            const layout = {
+                title: {
+                    text: `Extrinsic Semiconductor: ${physics.mat.name} (N<sub>D</sub> = ${physics.ND.toExponential(1)} cm⁻³)`,
+                    font: { size: 14 }
+                },
+                xaxis: { 
+                    title: 'Temperature (K)', 
+                    type: 'linear',
+                    range: [0, 800]
+                },
+                yaxis: { 
+                    title: 'Carrier Ratio (n/N<sub>D</sub> or n<sub>i</sub>/N<sub>D</sub>)', 
+                    type: 'log',
+                    range: [-4, 1]
+                },
+                plot_bgcolor: '#f8fafc',
+                paper_bgcolor: 'white',
+                margin: { t: 90, r: 30, b: 60, l: 70 },
+                height: 540,
+                legend: { x: 0.02, y: 0.98 },
+                annotations: [
+                    {
+                        x: 50, y: 0.001,
+                        text: 'Freeze-out',
+                        showarrow: false,
+                        font: { color: '#8b5cf6', size: 12, family: 'bold' }
+                    },
+                    {
+                        x: 300, y: 0.8,
+                        text: 'Extrinsic',
+                        showarrow: false,
+                        font: { color: '#3b82f6', size: 12, family: 'bold' }
+                    },
+                    {
+                        x: 600, y: 0.1,
+                        text: 'Intrinsic',
+                        showarrow: false,
+                        font: { color: '#ef4444', size: 12, family: 'bold' }
+                    }
+                ]
+            };
+
+            Plotly.newPlot('carrier-temp-plot', [trace_ionization, trace_intrinsic], layout, {responsive: true, displayModeBar: false});
+        }
+
+        function plotFermiLevel(physics) {
+            const temps = [];
+            const fermi_levels = [];
+            
+            for (let T = 50; T <= 800; T += 10) {
+                const tempPhysics = calculatePhysics(T, physics.ND, physics.type);
+                temps.push(T);
+                // Ensure Fermi level doesn't go below intrinsic level incorrectly
+                fermi_levels.push(Math.max(tempPhysics.EF, -0.1));
+            }
+
+            const trace_fermi = {
+                x: temps,
+                y: fermi_levels,
+                type: 'scatter',
+                mode: 'lines',
+                line: { color: '#8b5cf6', width: 4 },
+                name: 'Fermi Level (E<sub>F</sub> - E<sub>i</sub>)',
+                fill: 'tonexty'
+            };
+
+            const trace_intrinsic = {
+                x: temps,
+                y: temps.map(() => 0),
+                type: 'scatter',
+                mode: 'lines',
+                line: { color: '#64748b', width: 2, dash: 'dash' },
+                name: 'Intrinsic Level (E<sub>i</sub>)'
+            };
+
+            const layout = {
+                title: {
+                    text: 'Fermi Level vs Temperature',
+                    font: { size: 14 }
+                },
+                xaxis: { title: 'Temperature (K)' },
+                yaxis: { 
+                    title: 'Energy above E<sub>i</sub> (eV)',
+                    range: [-0.2, Math.max(...fermi_levels) + 0.1]
+                },
+                plot_bgcolor: '#f8fafc',
+                paper_bgcolor: 'white',
+                margin: { t: 90, r: 30, b: 60, l: 70 },
+                height: 540,
+                legend: { 
+                    x: 0.98, 
+                    y: 0.98, 
+                    xanchor: 'right',
+                    yanchor: 'top',
+                    bgcolor: 'rgba(255, 255, 255, 0.8)',
+                    bordercolor: 'rgba(0, 0, 0, 0.1)',
+                    borderwidth: 1
+                }
+            };
+
+            Plotly.newPlot('fermi-level-plot', [trace_intrinsic, trace_fermi], layout, {responsive: true, displayModeBar: false});
+        }
+
+        function plotBandDiagram(physics) {
+            const positions = Array.from({length: 100}, (_, i) => i);
+            const Ec = positions.map(() => physics.mat.Eg / 2);
+            const Ev = positions.map(() => -physics.mat.Eg / 2);
+            const Ei = positions.map(() => 0);
+            const EF = positions.map(() => physics.EF);
+
+            const traces = [
+                {
+                    x: positions,
+                    y: Ec,
+                    type: 'scatter',
+                    mode: 'lines',
+                    line: { color: '#ef4444', width: 4 },
+                    fill: 'tonexty',
+                    fillcolor: 'rgba(239, 68, 68, 0.1)',
+                    name: 'Conduction Band'
+                },
+                {
+                    x: positions,
+                    y: Ev,
+                    type: 'scatter',
+                    mode: 'lines',
+                    line: { color: '#3b82f6', width: 4 },
+                    fill: 'tozeroy',
+                    fillcolor: 'rgba(59, 130, 246, 0.1)',
+                    name: 'Valence Band'
+                },
+                {
+                    x: positions,
+                    y: Ei,
+                    type: 'scatter',
+                    mode: 'lines',
+                    line: { color: '#64748b', width: 2, dash: 'dot' },
+                    name: 'Intrinsic Level'
+                },
+                {
+                    x: positions,
+                    y: EF,
+                    type: 'scatter',
+                    mode: 'lines',
+                    line: { color: '#8b5cf6', width: 3 },
+                    name: 'Fermi Level'
+                }
+            ];
+
+            const layout = {
+                title: {
+                    text: `Energy Band Diagram - ${physics.mat.name} at ${physics.T}K`,
+                    font: { size: 14 }
+                },
+                xaxis: { title: 'Position (arbitrary units)', showgrid: false },
+                yaxis: { title: 'Energy (eV)' },
+                plot_bgcolor: '#f8fafc',
+                paper_bgcolor: 'white',
+                margin: { t: 90, r: 30, b: 60, l: 70 },
+                height: 540,
+                legend: { 
+                    x: 0.98, 
+                    y: 0.98, 
+                    xanchor: 'right',
+                    yanchor: 'top',
+                    bgcolor: 'rgba(255, 255, 255, 0.8)',
+                    bordercolor: 'rgba(0, 0, 0, 0.1)',
+                    borderwidth: 1
+                }
+            };
+
+            Plotly.newPlot('band-diagram-plot', traces, layout, {responsive: true, displayModeBar: false});
+        }
+
+        function plotDistributionFunctions(physics) {
+            const energies = [];
+            const fermi_dirac_300K = [];
+            const fermi_dirac_77K = [];
+            const fermi_dirac_600K = [];
+            const velocities = [];
+            const velocity_dist = [];
+            
+            // Energy distribution for different temperatures
+            for (let E = -0.3; E <= 1.0; E += 0.01) {
+                energies.push(E);
+                
+                // Fermi-Dirac at different temperatures
+                const fd_300 = 1 / (1 + Math.exp((E - physics.EF) / (constants.k * 300)));
+                const fd_77 = 1 / (1 + Math.exp((E - physics.EF) / (constants.k * 77)));
+                const fd_600 = 1 / (1 + Math.exp((E - physics.EF) / (constants.k * 600)));
+                
+                fermi_dirac_300K.push(fd_300);
+                fermi_dirac_77K.push(fd_77);
+                fermi_dirac_600K.push(fd_600);
+            }
+            
+            // Maxwell-Boltzmann velocity distribution
+            for (let v = 0; v <= 5e5; v += 2000) {
+                velocities.push(v / 1000); // Convert to km/s for display
+                const m_eff = physics.mat.me_eff * constants.m0;
+                const prefactor = 4 * Math.PI * Math.pow(m_eff / (2 * Math.PI * constants.k * physics.T), 1.5);
+                const mb_vel = prefactor * v * v * Math.exp(-m_eff * v * v / (2 * constants.k * physics.T));
+                velocity_dist.push(mb_vel * 1e-12); // Scale for visibility
+            }
+
+            const traces = [
+                {
+                    x: energies,
+                    y: fermi_dirac_77K,
+                    type: 'scatter',
+                    mode: 'lines',
+                    line: { color: '#3b82f6', width: 3 },
+                    name: 'F-D at 77K',
+                    yaxis: 'y'
+                },
+                {
+                    x: energies,
+                    y: fermi_dirac_300K,
+                    type: 'scatter',
+                    mode: 'lines',
+                    line: { color: '#8b5cf6', width: 3 },
+                    name: 'F-D at 300K',
+                    yaxis: 'y'
+                },
+                {
+                    x: energies,
+                    y: fermi_dirac_600K,
+                    type: 'scatter',
+                    mode: 'lines',
+                    line: { color: '#ef4444', width: 3 },
+                    name: 'F-D at 600K',
+                    yaxis: 'y'
+                },
+                {
+                    x: velocities,
+                    y: velocity_dist,
+                    type: 'scatter',
+                    mode: 'lines',
+                    line: { color: '#10b981', width: 3 },
+                    name: `M-B Velocity (${physics.T}K)`,
+                    yaxis: 'y2',
+                    xaxis: 'x2'
+                }
+            ];
+
+            const layout = {
+                title: {
+                    text: 'Distribution Functions: Temperature Dependence',
+                    font: { size: 14 }
+                },
+                xaxis: { title: 'Energy (eV)', domain: [0, 0.48] },
+                yaxis: { title: 'Occupation Probability f(E)', domain: [0, 1] },
+                xaxis2: { title: 'Velocity (km/s)', domain: [0.52, 1] },
+                yaxis2: { title: 'Velocity Distribution', overlaying: 'y', side: 'right', domain: [0, 1] },
+                plot_bgcolor: '#f8fafc',
+                paper_bgcolor: 'white',
+                margin: { t: 90, r: 30, b: 60, l: 70 },
+                height: 540,
+                legend: { 
+                    x: 0.25, 
+                    y: 0.98, 
+                    xanchor: 'center',
+                    yanchor: 'top',
+                    bgcolor: 'rgba(255, 255, 255, 0.85)',
+                    bordercolor: 'rgba(0, 0, 0, 0.1)',
+                    borderwidth: 1,
+                    orientation: 'h'
+                }
+            };
+
+            Plotly.newPlot('distribution-plot', traces, layout, {responsive: true, displayModeBar: false});
+        }
+
+        function plotMobilityVsTemperature(physics) {
+            const temps = [];
+            const mu_n_values = [];
+            const mu_p_values = [];
+            const mu_lattice = [];
+            const mu_impurity = [];
+            const mu_total = [];
+            
+            for (let T = 50; T <= 600; T += 10) {
+                temps.push(T);
+                
+                // Phonon-limited mobility (∝ T^-3/2)
+                const mu_L_n = physics.mat.mu_n * 3 * Math.pow(300/T, 1.5);
+                const mu_L_p = physics.mat.mu_p * 3 * Math.pow(300/T, 1.5);
+                
+                // Impurity-limited mobility (∝ T^3/2/N_I)
+                const mu_I_n = physics.mat.mu_n * 0.3 * Math.pow(T/300, 1.5) * (1e17 / physics.ND);
+                const mu_I_p = physics.mat.mu_p * 0.3 * Math.pow(T/300, 1.5) * (1e17 / physics.ND);
+                
+                // Matthiessen's rule
+                const mu_total_n = 1 / (1/mu_L_n + 1/mu_I_n);
+                const mu_total_p = 1 / (1/mu_L_p + 1/mu_I_p);
+                
+                mu_n_values.push(mu_total_n);
+                mu_p_values.push(mu_total_p);
+                mu_lattice.push(mu_L_n);
+                mu_impurity.push(mu_I_n);
+                mu_total.push(mu_total_n);
+            }
+
+            const traces = [
+                {
+                    x: temps,
+                    y: mu_n_values,
+                    type: 'scatter',
+                    mode: 'lines',
+                    line: { color: '#3b82f6', width: 4 },
+                    name: 'Electron Mobility'
+                },
+                {
+                    x: temps,
+                    y: mu_p_values,
+                    type: 'scatter',
+                    mode: 'lines',
+                    line: { color: '#ef4444', width: 4 },
+                    name: 'Hole Mobility'
+                }];
+
+            const layout = {
+                title: {
+                    text: `Carrier Mobility vs Temperature - ${physics.mat.name}`,
+                    font: { size: 14 }
+                },
+                xaxis: { title: 'Temperature (K)', type: 'log' },
+                yaxis: { title: 'Mobility (cm²/V·s)', type: 'log' },
+                plot_bgcolor: '#f8fafc',
+                paper_bgcolor: 'white',
+                margin: { t: 90, r: 30, b: 60, l: 70 },
+                height: 600,
+                legend: { 
+                    x: 0.98, 
+                    y: 0.98, 
+                    xanchor: 'right',
+                    yanchor: 'top',
+                    bgcolor: 'rgba(255, 255, 255, 0.8)',
+                    bordercolor: 'rgba(0, 0, 0, 0.1)',
+                    borderwidth: 1
+                }
+            };
+
+            Plotly.newPlot('mobility-plot', traces, layout, {responsive: true, displayModeBar: false});
+        }
+
+        function applyPreset(presetName) {
+            const presets = {
+                silicon: { material: 'Si', doping: 16, type: 'n-type', temp: 300 },
+                germanium: { material: 'Ge', doping: 16, type: 'n-type', temp: 300 },
+                gaas: { material: 'GaAs', doping: 17, type: 'n-type', temp: 300 },
+                freezeout: { temp: 77, doping: 16 },
+                highTemp: { temp: 600, doping: 16 },
+                intrinsic: { doping: 14, temp: 300 }
+            };
+            
+            const preset = presets[presetName];
+            if (!preset) return;
+            
+            if (preset.material) document.getElementById('material').value = preset.material;
+            if (preset.doping) document.getElementById('doping').value = preset.doping;
+            if (preset.type) document.getElementById('dopingType').value = preset.type;
+            if (preset.temp) document.getElementById('temperature').value = preset.temp;
+            
+            updateMaterial();
+            updateSimulation();
+        }
+
+        function resetToDefaults() {
+            document.getElementById('temperature').value = 300;
+            document.getElementById('doping').value = 16;
+            document.getElementById('dopingType').value = 'n-type';
+            document.getElementById('material').value = 'Si';
+            updateMaterial();
+            updateSimulation();
+        }
+
+        // Challenge System Variables
+        let challengeScore = 0;
+        let challengesCompleted = 0;
+        let hintsUsed = 0;
+        let challengeAnswers = {};
+
+        // Comprehensive Question Bank System
+        const questionBank = {
+            basic: [
+                {
+                    question: "What is the fundamental relationship between energy bands in semiconductors?",
+                    options: [
+                        "Valence band is always above conduction band",
+                        "Conduction band is above valence band with a band gap in between",
+                        "Bands overlap completely in semiconductors",
+                        "Band gap is zero in pure semiconductors"
+                    ],
+                    correct: 1,
+                    hint: "Think about the energy levels where electrons can exist in a semiconductor crystal.",
+                    explanation: "In semiconductors, the conduction band (higher energy) is separated from the valence band (lower energy) by an energy gap called the bandgap. This gap is what distinguishes semiconductors from conductors (no gap) and insulators (very large gap)."
+                },
+                {
+                    question: "What happens to carrier concentration with increasing temperature in intrinsic semiconductors?",
+                    options: [
+                        "Decreases exponentially",
+                        "Remains constant", 
+                        "Increases linearly",
+                        "Increases exponentially"
+                    ],
+                    correct: 3,
+                    hint: "Consider the thermal energy needed to promote electrons from valence to conduction band.",
+                    explanation: "Carrier concentration in intrinsic semiconductors follows: ni = √(NcNv)exp(-Eg/2kT). As temperature increases, more thermal energy is available to excite electrons across the bandgap, causing exponential increase in carrier concentration."
+                },
+                {
+                    question: "In n-type doping, what type of impurity atoms are added?",
+                    options: [
+                        "Acceptor atoms with fewer valence electrons",
+                        "Donor atoms with more valence electrons",
+                        "Atoms with the same valence electrons",
+                        "Noble gas atoms"
+                    ],
+                    correct: 1,
+                    hint: "Think about what happens when you add atoms with extra electrons to the crystal.",
+                    explanation: "N-type doping uses donor atoms (like P, As, Sb in Si) that have more valence electrons than the host material. These extra electrons are easily donated to the conduction band, increasing electron concentration."
+                },
+                {
+                    question: "What is the Fermi level in a semiconductor?",
+                    options: [
+                        "The highest occupied energy level at absolute zero",
+                        "The energy level with 50% probability of electron occupation",
+                        "Always in the middle of the band gap",
+                        "The top of the valence band"
+                    ],
+                    correct: 1,
+                    hint: "The Fermi level represents the chemical potential of electrons in the material.",
+                    explanation: "The Fermi level (EF) is defined by the Fermi-Dirac distribution: f(E) = 1/(1 + exp((E-EF)/kT)). At EF, the probability of occupation is exactly 50%. It represents the electrochemical potential of electrons in the material."
+                },
+                {
+                    question: "What characterizes a direct bandgap semiconductor?",
+                    options: [
+                        "Electrons and holes recombine without phonon assistance",
+                        "Energy minimum and maximum occur at different k-points",
+                        "No light emission is possible",
+                        "Only indirect transitions are allowed"
+                    ],
+                    correct: 0,
+                    hint: "Direct bandgap means electrons can transition directly without momentum change.",
+                    explanation: "In direct bandgap semiconductors (like GaAs), the conduction band minimum and valence band maximum occur at the same k-point. This allows direct electron-hole recombination with photon emission, making them ideal for LEDs and lasers. Indirect bandgaps (like Si) require phonon assistance."
+                },
+                {
+                    question: "What is the intrinsic carrier concentration at 0K?",
+                    options: [
+                        "Maximum value",
+                        "Approximately zero",
+                        "Equal to doping concentration",
+                        "Infinite"
+                    ],
+                    correct: 1,
+                    hint: "At absolute zero, thermal energy is insufficient to promote electrons across the bandgap.",
+                    explanation: "At T = 0K, there is no thermal energy to excite electrons across the bandgap. The exponential term exp(-Eg/2kT) approaches zero, making ni ≈ 0. All electrons remain in the valence band at absolute zero."
+                },
+                {
+                    question: "In p-type semiconductors, the majority carriers are:",
+                    options: [
+                        "Electrons",
+                        "Holes",
+                        "Photons",
+                        "Phonons"
+                    ],
+                    correct: 1,
+                    hint: "P-type doping creates electron deficiencies, making holes the majority carriers.",
+                    explanation: "P-type doping uses acceptor atoms (like B, Al, Ga in Si) with fewer valence electrons. These create holes in the valence band, which become the majority carriers. Electrons are minority carriers in p-type material."
+                },
+                {
+                    question: "What is the primary purpose of doping in semiconductors?",
+                    options: [
+                        "To change the crystal structure",
+                        "To control electrical conductivity",
+                        "To increase the bandgap",
+                        "To reduce temperature dependence"
+                    ],
+                    correct: 1,
+                    hint: "Doping introduces controlled impurities to modify electrical properties.",
+                    explanation: "Doping adds controlled impurities to semiconductors to increase conductivity by orders of magnitude. It allows control over carrier type (n or p), concentration, and thus conductivity, enabling the creation of p-n junctions and electronic devices."
+                }
+            ],
+            advanced: [
+                {
+                    question: "Which scattering mechanism dominates at high temperatures in semiconductors?",
+                    options: [
+                        "Ionized impurity scattering",
+                        "Phonon (lattice) scattering",
+                        "Surface scattering", 
+                        "Neutral impurity scattering"
+                    ],
+                    correct: 1,
+                    hint: "At high temperatures, atoms vibrate more, creating more lattice disturbances.",
+                    explanation: "Phonon scattering (lattice vibrations) increases with temperature as μL ∝ T^(-3/2). At high T, lattice vibrations dominate over ionized impurity scattering which decreases as μI ∝ T^(3/2). This is why mobility decreases at high temperatures."
+                },
+                {
+                    question: "What is the Einstein relation in semiconductor physics?",
+                    options: [
+                        "E = mc²",
+                        "D = μkT/q",
+                        "σ = qμn",
+                        "J = qDdn/dx"
+                    ],
+                    correct: 1,
+                    hint: "This relation connects diffusion coefficient with mobility in thermal equilibrium.",
+                    explanation: "The Einstein relation D = μkT/q connects the diffusion coefficient (D) with mobility (μ) through thermal voltage (kT/q). This fundamental relation shows that carriers with higher mobility also diffuse faster, maintaining thermodynamic equilibrium."
+                },
+                {
+                    question: "In the depletion approximation for a p-n junction, what assumption is made?",
+                    options: [
+                        "Mobile carriers are uniformly distributed",
+                        "All dopant atoms are ionized in the depletion region",
+                        "Electric field is zero everywhere",
+                        "Current flows only due to drift"
+                    ],
+                    correct: 1,
+                    hint: "This approximation assumes complete ionization and negligible mobile carrier density in the space charge region.",
+                    explanation: "The depletion approximation assumes that in the space charge region: (1) all dopants are ionized, (2) mobile carrier density is negligible, and (3) charge density equals ionized dopant density. This simplifies solving Poisson's equation for electric field and potential."
+                },
+                {
+                    question: "What is the effective mass in semiconductor physics?",
+                    options: [
+                        "The actual mass of electrons",
+                        "Mass that accounts for crystal field effects on carrier dynamics",
+                        "Always equal to free electron mass",
+                        "The mass of the dopant atoms"
+                    ],
+                    correct: 1,
+                    hint: "Effective mass describes how carriers respond to forces in the crystal lattice.",
+                    explanation: "Effective mass (m*) accounts for the periodic potential of the crystal lattice affecting carrier dynamics. From band structure: m* = ℏ²/(d²E/dk²). It can be much smaller than the free electron mass (e.g., m* = 0.067m₀ for GaAs), leading to higher mobility."
+                },
+                {
+                    question: "What is the built-in potential of a p-n junction?",
+                    options: [
+                        "Applied external voltage",
+                        "Potential difference due to charge separation at equilibrium",
+                        "Voltage across the entire device",
+                        "Maximum reverse bias voltage"
+                    ],
+                    correct: 1,
+                    hint: "Built-in potential arises from the diffusion of carriers across the junction.",
+                    explanation: "Built-in potential V₀ = (kT/q)ln(NₐNₐ/ni²) forms at a p-n junction due to carrier diffusion. Electrons diffuse from n-side to p-side and holes vice versa, leaving ionized dopants that create an electric field. At equilibrium, this field balances diffusion."
+                },
+                {
+                    question: "What is the significance of the depletion width in a p-n junction?",
+                    options: [
+                        "It determines the series resistance",
+                        "It affects the junction capacitance and breakdown voltage",
+                        "It controls the forward current",
+                        "It has no practical importance"
+                    ],
+                    correct: 1,
+                    hint: "Depletion width affects both the electric field distribution and capacitive behavior.",
+                    explanation: "Depletion width W = √(2ε(V₀+Vᵣ)(₁/Nₐ + ₁/Nₐ)/q) determines junction capacitance Cⱼ = εA/W and breakdown voltage. Wider depletion supports higher voltages but has lower capacitance. It's crucial for device design."
+                },
+                {
+                    question: "In a heavily doped semiconductor, what phenomenon occurs?",
+                    options: [
+                        "Bandgap increases significantly",
+                        "Bandgap narrowing and degeneracy effects",
+                        "Perfect insulation behavior",
+                        "Complete loss of semiconductor properties"
+                    ],
+                    correct: 1,
+                    hint: "Heavy doping leads to bandgap narrowing and Fermi level entering the bands.",
+                    explanation: "Heavy doping (>10¹⁸ cm⁻³) causes: (1) bandgap narrowing due to impurity band formation and carrier-carrier interactions, (2) Fermi level moving into conduction/valence band (degeneracy), (3) increased Auger recombination. These effects significantly alter device behavior."
+                }
+            ],
+            fillBlanks: [
+                {
+                    question: "The intrinsic carrier concentration is given by: ni = √(____ × ____) × exp(-Eg/____)",
+                    blanks: ["Nc", "Nv", "2kT"],
+                    hint: "This involves the effective density of states in conduction and valence bands."
+                },
+                {
+                    question: "For charge neutrality in doped semiconductors: ____ + n = ____ + p",
+                    blanks: ["Na-", "Nd+"],
+                    hint: "Consider all the charged species: ionized donors, ionized acceptors, electrons, and holes."
+                },
+                {
+                    question: "The drift current density is: J = q(____ × ____ + ____ × ____)",
+                    blanks: ["n", "μn", "p", "μp"],
+                    hint: "Current is due to both electron and hole contributions with their respective mobilities."
+                },
+                {
+                    question: "Matthiessen's rule states: 1/μ_total = 1/μ____ + 1/μ____",
+                    blanks: ["lattice", "impurity"],
+                    hint: "Total mobility is limited by multiple scattering mechanisms acting independently."
+                },
+                {
+                    question: "The diffusion current density is: J = -q × ____ × ∇____",
+                    blanks: ["D", "n"],
+                    hint: "Diffusion current arises from carrier concentration gradients."
+                },
+                {
+                    question: "The built-in potential is: Vbi = (kT/q) × ln(____×____/ni²)",
+                    blanks: ["Na", "Nd"],
+                    hint: "Built-in potential depends on the doping concentrations on both sides of the junction."
+                },
+                {
+                    question: "The depletion width formula is: W = √(2ε(____+____)/q × ____×____)",
+                    blanks: ["Na", "Nd", "Na", "Nd"],
+                    hint: "Depletion width depends on the permittivity and doping concentrations."
+                }
+            ],
+            calculations: [
+                {
+                    problem: "Calculate the intrinsic carrier concentration in Silicon at 300K. Given: Nc = 2.8×10¹⁹ cm⁻³, Nv = 1.04×10¹⁹ cm⁻³, Eg = 1.12 eV, kT = 0.026 eV",
+                    answer: 1.07e10,
+                    unit: "cm⁻³",
+                    hint: "Use ni = √(Nc × Nv) × exp(-Eg/2kT)"
+                },
+                {
+                    problem: "A silicon sample is doped with 10¹⁶ cm⁻³ phosphorus atoms. Calculate the minority carrier (hole) concentration at 300K. (ni = 1.07×10¹⁰ cm⁻³)",
+                    answer: 1.14e4,
+                    unit: "cm⁻³",
+                    hint: "Use the mass action law: np = ni²"
+                },
+                {
+                    problem: "Calculate the diffusion coefficient for electrons in silicon if the electron mobility is 1350 cm²/V·s at 300K. (kT/q = 0.026 V)",
+                    answer: 35.1,
+                    unit: "cm²/s",
+                    hint: "Use the Einstein relation: D = μkT/q"
+                },
+                {
+                    problem: "Calculate the built-in potential for a p-n junction with Na = 10¹⁷ cm⁻³, Nd = 10¹⁶ cm⁻³, ni = 1.5×10¹⁰ cm⁻³ at T = 300K. (kT/q = 0.026 V)",
+                    answer: 0.757,
+                    unit: "V",
+                    hint: "Use Vbi = (kT/q) × ln(Na×Nd/ni²)"
+                },
+                {
+                    problem: "Find the depletion width of a p-n junction with Na = 10¹⁸ cm⁻³, Nd = 10¹⁶ cm⁻³, εr = 11.7, Vbi = 0.8V. (ε0 = 8.85×10⁻¹⁴ F/cm)",
+                    answer: 0.089,
+                    unit: "μm",
+                    hint: "Use W = √(2εVbi(Na+Nd)/(q×Na×Nd))"
+                },
+                {
+                    problem: "Calculate the Fermi level position relative to intrinsic level for n-type Si with Nd = 10¹⁶ cm⁻³ at 300K. (ni = 1.5×10¹⁰ cm⁻³, kT = 0.026 eV)",
+                    answer: 0.347,
+                    unit: "eV",
+                    hint: "Use EF - Ei = kT × ln(n/ni) where n ≈ Nd for extrinsic conditions"
+                },
+                {
+                    problem: "Calculate the electron mobility in GaAs at 300K if the scattering time is 0.3 ps and effective mass is 0.067×m0. (m0 = 9.1×10⁻³¹ kg, q = 1.6×10⁻¹⁹ C)",
+                    answer: 7890,
+                    unit: "cm²/V·s",
+                    hint: "Use μ = qτ/m* where τ is the scattering time"
+                }
+            ]
+        };
+
+        // Variables to store current randomized challenge sets
+        let currentChallengeData = {
+            quiz1: [],
+            advanced: [],
+            fillBlanks: [],
+            calculations: []
+        };
+
+        // Function to shuffle array randomly
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // Function to randomize questions from the question bank
+        function randomizeQuestions() {
+            // Select 4 random basic questions for quiz1
+            currentChallengeData.quiz1 = shuffleArray(questionBank.basic).slice(0, 4);
+            
+            // Select 3 random advanced questions
+            currentChallengeData.advanced = shuffleArray(questionBank.advanced).slice(0, 3);
+            
+            // Select 3 random fill-in-the-blank questions
+            currentChallengeData.fillBlanks = shuffleArray(questionBank.fillBlanks).slice(0, 3);
+            
+            // Select 3 random calculation problems
+            currentChallengeData.calculations = shuffleArray(questionBank.calculations).slice(0, 3);
+            
+            // Shuffle the options within each question for additional randomization
+            currentChallengeData.quiz1.forEach(q => {
+                if (q.options) {
+                    const correctAnswer = q.options[q.correct];
+                    q.options = shuffleArray(q.options);
+                    q.correct = q.options.indexOf(correctAnswer);
+                }
+            });
+            
+            currentChallengeData.advanced.forEach(q => {
+                if (q.options) {
+                    const correctAnswer = q.options[q.correct];
+                    q.options = shuffleArray(q.options);
+                    q.correct = q.options.indexOf(correctAnswer);
+                }
+            });
+            
+            console.log("Questions randomized! Current challenge set:", currentChallengeData);
+        }
+
+        // Initialize Challenges when tab is first opened
+        function initializeChallenges() {
+            if (document.getElementById('challenge1-content').innerHTML === '') {
+                randomizeQuestions(); // Randomize questions each time
+                loadQuizChallenge();
+                loadAdvancedChallenge(); 
+                loadFillBlanksChallenge();
+                loadCalculationsChallenge();
+                updateChallengeStats();
+            }
+        }
+
+        // Load Quiz Challenge
+        function loadQuizChallenge() {
+            const content = document.getElementById('challenge1-content');
+            let html = '';
+            
+            currentChallengeData.quiz1.forEach((q, index) => {
+                html += `<div class="quiz-question" id="quiz1-q${index}">
+                    <h4>Question ${index + 1}: ${q.question}</h4>`;
+                
+                q.options.forEach((option, optIndex) => {
+                    html += `<label class="quiz-option">
+                        <input type="radio" name="quiz1-q${index}" value="${optIndex}" style="margin-right: 10px;">
+                        ${option}
+                    </label>`;
+                });
+                
+                html += '</div>';
+            });
+            
+            content.innerHTML = html;
+        }
+
+        // Load Advanced Challenge
+        function loadAdvancedChallenge() {
+            const content = document.getElementById('challenge2-content');
+            let html = '';
+            
+            currentChallengeData.advanced.forEach((q, index) => {
+                html += `<div class="quiz-question" id="advanced-q${index}">
+                    <h4>Advanced Question ${index + 1}: ${q.question}</h4>`;
+                
+                q.options.forEach((option, optIndex) => {
+                    html += `<label class="quiz-option">
+                        <input type="radio" name="advanced-q${index}" value="${optIndex}" style="margin-right: 10px;">
+                        ${option}
+                    </label>`;
+                });
+                
+                html += '</div>';
+            });
+            
+            content.innerHTML = html;
+        }
+
+        // Load Fill in Blanks Challenge
+        function loadFillBlanksChallenge() {
+            const content = document.getElementById('challenge3-content');
+            let html = '';
+            
+            currentChallengeData.fillBlanks.forEach((q, index) => {
+                let questionText = q.question;
+                q.blanks.forEach((blank, blankIndex) => {
+                    questionText = questionText.replace('____', 
+                        `<input type="text" class="fill-blank-input" id="fill-${index}-${blankIndex}" placeholder="?">`);
+                });
+                
+                html += `<div class="quiz-question">
+                    <h4>Fill in the Blanks ${index + 1}:</h4>
+                    <p>${questionText}</p>
+                </div>`;
+            });
+            
+            content.innerHTML = html;
+        }
+
+        // Load Calculations Challenge
+        function loadCalculationsChallenge() {
+            const content = document.getElementById('challenge4-content');
+            let html = '';
+            
+            currentChallengeData.calculations.forEach((calc, index) => {
+                html += `<div class="calculation-problem">
+                    <h4>Problem ${index + 1}:</h4>
+                    <p>${calc.problem}</p>
+                    <div style="text-align: center; margin: 20px 0;">
+                        <label>Answer: </label>
+                        <input type="number" class="calculation-input" id="calc-${index}" step="any" placeholder="Enter your answer">
+                        <span style="margin-left: 10px;">${calc.unit}</span>
+                    </div>
+                </div>`;
+            });
+            
+            content.innerHTML = html;
+        }
+
+        // Check Quiz Answers
+        function checkQuizAnswers(challengeNum) {
+            const questions = currentChallengeData.quiz1;
+            let correct = 0;
+            let feedback = '';
+            let explanationsHtml = '<div style="margin-top: 20px;"><h4>Explanations:</h4>';
+            
+            questions.forEach((q, index) => {
+                const selected = document.querySelector(`input[name="quiz1-q${index}"]:checked`);
+                const questionDiv = document.getElementById(`quiz1-q${index}`);
+                
+                if (selected) {
+                    const answer = parseInt(selected.value);
+                    const isCorrect = answer === q.correct;
+                    if (isCorrect) {
+                        correct++;
+                        selected.parentElement.classList.add('correct');
+                    } else {
+                        selected.parentElement.classList.add('incorrect');
+                        // Show correct answer
+                        const correctOption = questionDiv.querySelectorAll('.quiz-option')[q.correct];
+                        correctOption.classList.add('correct');
+                    }
+                    
+                    // Add explanation for each question
+                    explanationsHtml += `<div class="info-box" style="margin: 10px 0;">
+                        <h4>${isCorrect ? '✓' : '✗'} Question ${index + 1}</h4>
+                        <p><strong>Correct Answer:</strong> ${q.options[q.correct]}</p>
+                        ${q.explanation ? `<p><strong>Explanation:</strong> ${q.explanation}</p>` : ''}
+                    </div>`;
+                }
+            });
+            
+            explanationsHtml += '</div>';
+            
+            const score = Math.round((correct / questions.length) * 100);
+            challengeScore += score;
+            
+            if (score >= 75) {
+                challengesCompleted++;
+                feedback = `<div class="success-feedback">
+                    <strong>Excellent!</strong> You scored ${correct}/${questions.length} (${score}%). 
+                    Challenge completed! +${score} points.
+                </div>${explanationsHtml}`;
+            } else {
+                feedback = `<div class="error-feedback">
+                    <strong>Good try!</strong> You scored ${correct}/${questions.length} (${score}%). 
+                    You need 75% to complete this challenge. Try again!
+                </div>${explanationsHtml}`;
+            }
+            
+            document.getElementById('challenge1-feedback').innerHTML = feedback;
+            updateChallengeStats();
+        }
+
+        // Check Advanced Answers
+        function checkAdvancedAnswers() {
+            const questions = currentChallengeData.advanced;
+            let correct = 0;
+            let feedback = '';
+            let explanationsHtml = '<div style="margin-top: 20px;"><h4>Detailed Explanations:</h4>';
+            
+            questions.forEach((q, index) => {
+                const selected = document.querySelector(`input[name="advanced-q${index}"]:checked`);
+                const questionDiv = document.getElementById(`advanced-q${index}`);
+                
+                if (selected) {
+                    const answer = parseInt(selected.value);
+                    const isCorrect = answer === q.correct;
+                    if (isCorrect) {
+                        correct++;
+                        selected.parentElement.classList.add('correct');
+                    } else {
+                        selected.parentElement.classList.add('incorrect');
+                        const correctOption = questionDiv.querySelectorAll('.quiz-option')[q.correct];
+                        correctOption.classList.add('correct');
+                    }
+                    
+                    // Add explanation for each question
+                    explanationsHtml += `<div class="info-box" style="margin: 10px 0;">
+                        <h4>${isCorrect ? '✓' : '✗'} Question ${index + 1}</h4>
+                        <p><strong>Correct Answer:</strong> ${q.options[q.correct]}</p>
+                        ${q.explanation ? `<p><strong>Explanation:</strong> ${q.explanation}</p>` : ''}
+                    </div>`;
+                }
+            });
+            
+            explanationsHtml += '</div>';
+            
+            const score = Math.round((correct / questions.length) * 100);
+            challengeScore += score;
+            
+            if (score >= 75) {
+                challengesCompleted++;
+                feedback = `<div class="success-feedback">
+                    <strong>Outstanding!</strong> You scored ${correct}/${questions.length} (${score}%). 
+                    Advanced challenge completed! +${score} points.
+                </div>${explanationsHtml}`;
+            } else {
+                feedback = `<div class="error-feedback">
+                    <strong>Keep trying!</strong> You scored ${correct}/${questions.length} (${score}%). 
+                    Advanced concepts require 75% to pass.
+                </div>${explanationsHtml}`;
+            }
+            
+            document.getElementById('challenge2-feedback').innerHTML = feedback;
+            updateChallengeStats();
+        }
+
+        // Check Fill in Blanks
+        function checkFillBlanks() {
+            const questions = currentChallengeData.fillBlanks;
+            let correct = 0;
+            let total = 0;
+            let feedback = '';
+            
+            questions.forEach((q, qIndex) => {
+                q.blanks.forEach((blank, bIndex) => {
+                    total++;
+                    const input = document.getElementById(`fill-${qIndex}-${bIndex}`);
+                    if (input && input.value.trim().toLowerCase() === blank.toLowerCase()) {
+                        correct++;
+                        input.style.backgroundColor = '#d4edda';
+                        input.style.borderColor = '#c3e6cb';
+                    } else {
+                        input.style.backgroundColor = '#f8d7da';
+                        input.style.borderColor = '#f5c6cb';
+                    }
+                });
+            });
+            
+            const score = Math.round((correct / total) * 100);
+            challengeScore += score;
+            
+            // Show correct answers and hints
+            let answersHtml = '<div style="margin-top: 20px;"><h4>Correct Answers & Hints:</h4>';
+            questions.forEach((q, index) => {
+                answersHtml += `<div class="info-box" style="margin: 10px 0;">
+                    <h4>Equation ${index + 1}</h4>
+                    <p><strong>Correct Answers:</strong> ${q.blanks.join(', ')}</p>
+                    ${q.hint ? `<p><strong>Hint:</strong> ${q.hint}</p>` : ''}
+                </div>`;
+            });
+            answersHtml += '</div>';
+            
+            if (score >= 75) {
+                challengesCompleted++;
+                feedback = `<div class="success-feedback">
+                    <strong>Perfect!</strong> You got ${correct}/${total} blanks correct (${score}%). 
+                    Fill-in-the-blanks challenge completed! +${score} points.
+                </div>${answersHtml}`;
+            } else {
+                feedback = `<div class="error-feedback">
+                    <strong>Almost there!</strong> You got ${correct}/${total} blanks correct (${score}%). 
+                    You need 75% to complete this challenge.
+                </div>${answersHtml}`;
+            }
+            
+            document.getElementById('challenge3-feedback').innerHTML = feedback;
+            updateChallengeStats();
+        }
+
+        // Check Calculations
+        function checkCalculations() {
+            const problems = currentChallengeData.calculations;
+            let correct = 0;
+            let feedback = '';
+            
+            problems.forEach((prob, index) => {
+                const input = document.getElementById(`calc-${index}`);
+                const userAnswer = parseFloat(input.value);
+                const tolerance = prob.answer * 0.1; // 10% tolerance
+                
+                if (Math.abs(userAnswer - prob.answer) <= tolerance) {
+                    correct++;
+                    input.style.backgroundColor = '#d4edda';
+                    input.style.borderColor = '#c3e6cb';
+                } else {
+                    input.style.backgroundColor = '#f8d7da';
+                    input.style.borderColor = '#f5c6cb';
+                }
+            });
+            
+            const score = Math.round((correct / problems.length) * 100);
+            challengeScore += score;
+            
+            // Show correct answers and solution steps
+            let solutionsHtml = '<div style="margin-top: 20px;"><h4>Solutions & Explanations:</h4>';
+            problems.forEach((prob, index) => {
+                const input = document.getElementById(`calc-${index}`);
+                const userAnswer = parseFloat(input.value);
+                const isCorrect = Math.abs(userAnswer - prob.answer) <= (prob.answer * 0.1);
+                solutionsHtml += `<div class="info-box" style="margin: 10px 0;">
+                    <h4>${isCorrect ? '✓' : '✗'} Problem ${index + 1}</h4>
+                    <p><strong>Your Answer:</strong> ${userAnswer || 'Not answered'} ${prob.unit}</p>
+                    <p><strong>Correct Answer:</strong> ${prob.answer} ${prob.unit}</p>
+                    ${prob.hint ? `<p><strong>Hint:</strong> ${prob.hint}</p>` : ''}
+                </div>`;
+            });
+            solutionsHtml += '</div>';
+            
+            if (score >= 75) {
+                challengesCompleted++;
+                feedback = `<div class="success-feedback">
+                    <strong>Brilliant!</strong> You solved ${correct}/${problems.length} problems correctly (${score}%). 
+                    Calculations challenge completed! +${score} points.
+                </div>${solutionsHtml}`;
+            } else {
+                feedback = `<div class="error-feedback">
+                    <strong>Good effort!</strong> You solved ${correct}/${problems.length} problems correctly (${score}%). 
+                    Check your calculations and try again.
+                </div>${solutionsHtml}`;
+            }
+            
+            document.getElementById('challenge4-feedback').innerHTML = feedback;
+            updateChallengeStats();
+        }
+
+        // Show Hints Functions
+        function showQuizHints(challengeNum) {
+            hintsUsed++;
+            const hints = currentChallengeData.quiz1.map((q, i) => `<strong>Q${i+1}:</strong> ${q.hint}`).join('<br>');
+            document.getElementById('challenge1-feedback').innerHTML = 
+                `<div class="hint-box"><strong>Hints:</strong><br>${hints}</div>`;
+            updateChallengeStats();
+        }
+
+        function showAdvancedHints() {
+            hintsUsed++;
+            const hints = currentChallengeData.advanced.map((q, i) => `<strong>Q${i+1}:</strong> ${q.hint}`).join('<br>');
+            document.getElementById('challenge2-feedback').innerHTML = 
+                `<div class="hint-box"><strong>Advanced Hints:</strong><br>${hints}</div>`;
+            updateChallengeStats();
+        }
+
+        function showFillBlanksHint() {
+            hintsUsed++;
+            const hints = currentChallengeData.fillBlanks.map((q, i) => `<strong>Equation ${i+1}:</strong> ${q.hint}`).join('<br>');
+            document.getElementById('challenge3-feedback').innerHTML = 
+                `<div class="hint-box"><strong>Hints:</strong><br>${hints}</div>`;
+            updateChallengeStats();
+        }
+
+        function showCalculationHint() {
+            hintsUsed++;
+            const hints = currentChallengeData.calculations.map((q, i) => `<strong>Problem ${i+1}:</strong> ${q.hint}`).join('<br>');
+            document.getElementById('challenge4-feedback').innerHTML = 
+                `<div class="hint-box"><strong>Calculation Hints:</strong><br>${hints}</div>`;
+            updateChallengeStats();
+        }
+
+        // Reset Individual Challenges
+        function resetChallenge(challengeNum) {
+            switch(challengeNum) {
+                case 1:
+                    document.querySelectorAll('input[type="radio"]').forEach(input => {
+                        input.checked = false;
+                        input.parentElement.classList.remove('correct', 'incorrect');
+                    });
+                    document.getElementById('challenge1-feedback').innerHTML = '';
+                    break;
+                case 2:
+                    document.querySelectorAll('#challenge2-content input[type="radio"]').forEach(input => {
+                        input.checked = false;
+                        input.parentElement.classList.remove('correct', 'incorrect');
+                    });
+                    document.getElementById('challenge2-feedback').innerHTML = '';
+                    break;
+                case 3:
+                    document.querySelectorAll('.fill-blank-input').forEach(input => {
+                        input.value = '';
+                        input.style.backgroundColor = '';
+                        input.style.borderColor = '';
+                    });
+                    document.getElementById('challenge3-feedback').innerHTML = '';
+                    break;
+                case 4:
+                    document.querySelectorAll('.calculation-input').forEach(input => {
+                        input.value = '';
+                        input.style.backgroundColor = '';
+                        input.style.borderColor = '';
+                    });
+                    document.getElementById('challenge4-feedback').innerHTML = '';
+                    break;
+            }
+        }
+
+        // Reset All Challenges
+        function resetAllChallenges() {
+            challengeScore = 0;
+            challengesCompleted = 0;
+            hintsUsed = 0;
+            
+            for (let i = 1; i <= 4; i++) {
+                resetChallenge(i);
+            }
+            
+            updateChallengeStats();
+        }
+
+        // Get New Questions - Randomize and reload all challenges
+        function getNewQuestions() {
+            // Reset all challenge data first
+            challengeScore = 0;
+            challengesCompleted = 0;
+            hintsUsed = 0;
+            
+            // Clear all existing content
+            for (let i = 1; i <= 4; i++) {
+                resetChallenge(i);
+            }
+            
+            // Generate new random questions
+            randomizeQuestions();
+            
+            // Reload all challenges with new questions
+            loadQuizChallenge();
+            loadAdvancedChallenge();
+            loadFillBlanksChallenge();
+            loadCalculationsChallenge();
+            
+            // Update statistics
+            updateChallengeStats();
+            
+            // Show success message
+            const successMessage = '<div class="success-feedback" style="text-align: center;"><i class="fas fa-check-circle"></i> <strong>New questions loaded!</strong> Try your luck with these fresh challenges.</div>';
+            
+            // Temporarily show the message in the stats area
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = successMessage;
+            tempDiv.style.marginTop = '15px';
+            
+            const statsSection = document.querySelector('.challenge-stats');
+            statsSection.parentNode.insertBefore(tempDiv, statsSection.nextSibling);
+            
+            // Remove message after 3 seconds
+            setTimeout(() => {
+                tempDiv.remove();
+            }, 3000);
+        }
+
+        // Update Challenge Statistics
+        function updateChallengeStats() {
+            document.getElementById('totalScoreValue').textContent = challengeScore;
+            document.getElementById('challengesCompletedValue').textContent = `${challengesCompleted}/4`;
+            document.getElementById('hintsUsedValue').textContent = hintsUsed;
+            
+            const progress = (challengesCompleted / 4) * 100;
+            document.getElementById('totalProgressBar').style.width = `${progress}%`;
+        }
+
+        // Modified switchTab function to initialize challenges
+        const originalSwitchTab = switchTab;
+        switchTab = function(tabName) {
+            originalSwitchTab.call(this, tabName);
+            
+            // Handle fullscreen layout for challenges tab
+            const containerElement = document.querySelector('.container');
+            if (tabName === 'challenges') {
+                containerElement.classList.add('challenges-fullscreen');
+                initializeChallenges();
+            } else {
+                containerElement.classList.remove('challenges-fullscreen');
+            }
+        };
+
+        // Removed toggleControlPanel and toggleInfoPanel functions as we now use fixed layout
+    </script>
+<script src="../assets/js/iframeResize.js"></script>
+        
+        </body>
+</html>
